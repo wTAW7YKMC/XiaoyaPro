@@ -1,5 +1,7 @@
+// 用户状态管理 - 使用 Supabase Auth
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { supabase, getCurrentUser, signOut as supabaseSignOut } from '../services/supabase';
 
 interface School {
   id: string;
@@ -9,7 +11,8 @@ interface School {
 
 interface User {
   id: string;
-  phone: string;
+  email?: string;
+  phone?: string;
   name: string;
   avatar?: string;
   role: string;
@@ -21,54 +24,47 @@ interface AuthState {
   // 状态
   currentSchool: School | null;
   user: User | null;
-  accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
-  
-  //  actions
+
+  // actions
   setSchool: (school: School) => void;
-  setUser: (user: User, accessToken: string, refreshToken: string) => void;
-  logout: () => void;
-  updateToken: (accessToken: string, refreshToken: string) => void;
+  setUser: (user: User) => void;
+  logout: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       // 初始状态
       currentSchool: null,
       user: null,
-      accessToken: null,
-      refreshToken: null,
       isAuthenticated: false,
-      
+
       // 设置学校
       setSchool: (school) => set({ currentSchool: school }),
-      
-      // 设置用户信息（登录成功）
-      setUser: (user, accessToken, refreshToken) =>
+
+      // 设置用户信息（登录成功后调用）
+      setUser: (user) =>
         set({
           user,
-          accessToken,
-          refreshToken,
           isAuthenticated: true,
         }),
-      
-      // 登出
-      logout: () =>
+
+      // 登出 - 同时清除 Supabase Session
+      logout: async () => {
+        try {
+          await supabaseSignOut();
+        } catch (e) {
+          console.error('Supabase 登出失败:', e);
+        }
         set({
           user: null,
-          accessToken: null,
-          refreshToken: null,
           isAuthenticated: false,
-        }),
-      
-      // 更新Token
-      updateToken: (accessToken, refreshToken) =>
-        set({ accessToken, refreshToken }),
+        });
+      },
     }),
     {
-      name: 'xiaoya-auth', // localStorage key
+      name: 'xiaoya-auth',
     }
   )
 );

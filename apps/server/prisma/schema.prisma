@@ -1,5 +1,5 @@
 // Prisma Schema - 小雅智能助手数据库模型
-// 严格按照需求文档中的关联关系定义
+// 适配 Supabase 云端 PostgreSQL（列名全小写）
 
 generator client {
   provider = "prisma-client-js"
@@ -15,88 +15,90 @@ model User {
   id            String   @id @default(uuid())
   phone         String   @unique
   email         String?  @unique
-  password      String   // bcrypt加密
+  password      String
   name          String
-  avatar        String?  // 头像URL
+  avatar        String?
   role          Role     @default(STUDENT)
-  schoolId      String?
+  schoolId      String?  @map("schoolid")
   school        School?  @relation(fields: [schoolId], references: [id])
-  userType      String   @default("普通用户") // 普通用户/VIP/管理员
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  userType      String   @map("usertype") @default("普通用户")
+  createdAt     DateTime @map("createdat") @default(now())
+  updatedAt     DateTime @map("updatedat") @updatedAt
 
-  // === 1:N 关联 ===
   teachCourses    Course[]       @relation("TeacherCourses")
-  assignments     Assignment[]   // 教师布置的作业
+  assignments     Assignment[]
   submissions     Submission[]
   notes           Note[]
   messages        Message[]      @relation("UserMessages")
   attendances     Attendance[]
   grades          Grade[]
   aiConversations AIConversation[]
+  learnCourses    Enrollment[]
+  groups          GroupMember[]
+  discussions     Discussion[]
 
-  // === N:M 关联 ===
-  learnCourses  Enrollment[]
-  groups        GroupMember[]
-  discussions   Discussion[]
+  @@map("User")
 }
 
 // ========== 学校模型 ==========
 model School {
   id        String   @id @default(uuid())
   name      String
-  logo      String?  // 校徽URL
+  logo      String?
   code      String   @unique
-  createdAt DateTime @default(now())
+  createdAt DateTime @map("createdat") @default(now())
 
-  users     User[]
-  courses   Course[]
+  users   User[]
+  courses Course[]
+
+  @@map("School")
 }
 
 // ========== 课程模型 ==========
 model Course {
   id          String       @id @default(uuid())
   title       String
-  cover       String?      // 课程封面
+  cover       String?
   description String?      @db.Text
   status      CourseStatus @default(ONGOING)
   semester    String
-  type        String       @default("校内") // 校内/校外/自主开课
-  visitCount  Int          @default(0)
-  maxStudents Int?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  type        String       @default("校内")
+  visitCount  Int          @map("visitcount") @default(0)
+  maxStudents Int?         @map("maxstudents")
+  createdAt   DateTime     @map("createdat") @default(now())
+  updatedAt   DateTime     @map("updatedat") @updatedAt
 
-  // === 关联关系 ===
-  teacherId   String
-  teacher     User         @relation("TeacherCourses", fields: [teacherId], references: [id])
-  schoolId    String?
-  school      School?      @relation(fields: [schoolId], references: [id])
+  teacherId String   @map("teacherid")
+  teacher   User     @relation("TeacherCourses", fields: [teacherId], references: [id])
+  schoolId  String?  @map("schoolid")
+  school    School?  @relation(fields: [schoolId], references: [id])
 
-  // === 1:N 子表 ===
-  assignments   Assignment[]
-  documents     Document[]
-  discussions   Discussion[]
-  groups        Group[]
-  enrollments   Enrollment[]
-  attendances   Attendance[]
-  grades        Grade[]
-  chapters      Chapter[] // 课程章节（备授课）
+  assignments Assignment[]
+  documents   Document[]
+  discussions Discussion[]
+  groups      Group[]
+  enrollments Enrollment[]
+  attendances Attendance[]
+  grades      Grade[]
+  chapters    Chapter[]
+
+  @@map("Course")
 }
 
-// ========== 选课/注册模型（N:M关联表） ==========
+// ========== 选课/注册模型 ==========
 model Enrollment {
-  id        String     @id @default(uuid())
-  userId    String
-  courseId  String
-  role      EnrollRole @default(STUDENT)
-  progress  Int        @default(0) // 学习进度百分比
-  joinedAt  DateTime   @default(now())
+  id       String     @id @default(uuid())
+  userId   String     @map("userid")
+  courseId String     @map("courseid")
+  role     EnrollRole @default(STUDENT)
+  progress Int        @default(0)
+  joinedAt DateTime   @map("joinedat") @default(now())
 
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course    Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
+  @@map("Enrollment")
 }
 
 // ========== 作业/任务模型 ==========
@@ -106,35 +108,38 @@ model Assignment {
   type            AssignmentType @default(HOMEWORK)
   content         String         @db.Text
   deadline        DateTime?
-  maxScore        Int            @default(100)
+  maxScore        Int            @map("maxscore") @default(100)
   status          String         @default("DRAFT")
-  aiReviewEnabled Boolean        @default(false)
-  createdAt       DateTime       @default(now())
+  aiReviewEnabled Boolean        @map("aireviewenabled") @default(false)
+  createdAt       DateTime       @map("createdat") @default(now())
 
-  teacherId       String
-  teacher         User           @relation(fields: [teacherId], references: [id])
-  courseId        String
-  course        Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
+  teacherId  String     @map("teacherid")
+  teacher    User       @relation(fields: [teacherId], references: [id])
+  courseId   String     @map("courseid")
+  course     Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
   submissions Submission[]
+
+  @@map("Assignment")
 }
 
 // ========== 作业提交模型 ==========
 model Submission {
-  id           String           @id @default(uuid())
-  content      String           @db.Text
-  attachments  String[]
-  score        Int?
-  feedback     String?          @db.Text
-  aiReview     String?          @db.Text // AI批改结果JSON
-  status       SubmissionStatus @default(SUBMITTED)
-  submittedAt  DateTime         @default(now())
-  gradedAt     DateTime?
+  id          String           @id @default(uuid())
+  content     String           @db.Text
+  attachments String[]
+  score       Int?
+  feedback    String?          @db.Text
+  aiReview    String?          @map("aireview") @db.Text
+  status      SubmissionStatus @default(SUBMITTED)
+  submittedAt DateTime         @map("submittedat") @default(now())
+  gradedAt    DateTime?        @map("gradedat")
 
-  studentId    String
-  student      User             @relation(fields: [studentId], references: [id])
-  assignmentId String
-  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String     @map("studentid")
+    student      User       @relation(fields: [studentId], references: [id])
+  assignmentId String     @map("assignmentid")
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@map("Submission")
 }
 
 // ========== 学习分组模型 ==========
@@ -142,39 +147,44 @@ model Group {
   id         String   @id @default(uuid())
   name       String
   type       String   @default("协作学习分组")
-  maxMembers Int      @default(6)
-  createdAt  DateTime @default(now())
+  maxMembers Int      @map("maxmembers") @default(6)
+  createdAt  DateTime @map("createdat") @default(now())
 
-  courseId   String
-  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  members    GroupMember[]
+  courseId String @map("courseid")
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  members  GroupMember[]
+
+  @@map("Group")
 }
 
-// ========== 分组成员模型（N:M关联表） ==========
+// ========== 分组成员模型 ==========
 model GroupMember {
   id       String   @id @default(uuid())
-  role     String   @default("member") // leader/member
-  joinedAt DateTime @default(now())
+  role     String   @default("member")
+  joinedAt DateTime @map("joinedat") @default(now())
 
-  userId   String
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  groupId  String
-  group    Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId  String @map("userid")
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupId String @map("groupid")
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@unique([userId, groupId])
+  @@map("GroupMember")
 }
 
 // ========== 课程章节模型 ==========
 model Chapter {
-  id        String   @id @default(uuid())
-  title     String
-  order     Int
-  visible   Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id       String   @id @default(uuid())
+  title    String
+  order    Int      @map("ordercol")
+  visible  Boolean  @default(true)
+  createdAt DateTime @map("createdat") @default(now())
 
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String    @map("courseid")
+  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
   materials Material[]
+
+  @@map("Chapter")
 }
 
 // ========== 课程资料模型 ==========
@@ -182,13 +192,15 @@ model Material {
   id         String   @id @default(uuid())
   name       String
   url        String
-  type       String   // PDF/DOC/VIDEO/IMAGE/LINK
+  type       String
   size       Int?
   visible    Boolean  @default(true)
-  uploadedAt DateTime @default(now())
+  uploadedAt DateTime @map("uploadedat") @default(now())
 
-  chapterId  String
-  chapter    Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapterId String  @map("chapterid")
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@map("Material")
 }
 
 // ========== 课程文档模型 ==========
@@ -198,10 +210,12 @@ model Document {
   url       String
   type      String
   size      Int?
-  createdAt DateTime @default(now())
+  createdAt DateTime @map("createdat") @default(now())
 
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String @map("courseid")
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("Document")
 }
 
 // ========== 课程讨论模型 ==========
@@ -209,42 +223,47 @@ model Discussion {
   id        String   @id @default(uuid())
   title     String
   content   String   @db.Text
-  aiSummary String?  @db.Text
-  createdAt DateTime @default(now())
+  aiSummary String?  @map("aisummary") @db.Text
+  createdAt DateTime @map("createdat") @default(now())
 
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  authorId String @map("authorid")
+  author   User   @relation(fields: [authorId], references: [id])
+  courseId String @map("courseid")
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("Discussion")
 }
 
 // ========== 考勤模型 ==========
 model Attendance {
-  id       String           @id @default(uuid())
-  date     DateTime
-  status   AttendanceStatus @default(PRESENT)
-  method   String           @default("manual")
+  id     String           @id @default(uuid())
+  date   DateTime
+  status AttendanceStatus @default(PRESENT)
+  method String           @default("manual")
 
-  userId   String
-  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId String
-  course   Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId   String @map("userid")
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String @map("courseid")
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId, date])
+  @@map("Attendance")
 }
 
 // ========== 成绩模型 ==========
 model Grade {
   id        String   @id @default(uuid())
-  type      String   // 平时/期中/期末/总评
+  type      String
   score     Int
   comment   String?
-  createdAt DateTime @default(now())
+  createdAt DateTime @map("createdat") @default(now())
 
-  studentId String
-  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  studentId String @map("studentid")
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId  String @map("courseid")
+  course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("Grade")
 }
 
 // ========== 笔记模型 ==========
@@ -252,86 +271,92 @@ model Note {
   id        String   @id @default(uuid())
   title     String
   content   String   @db.Text
-  courseId  String?
-  tags      String[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  courseId  String?  @map("courseid")
+  tags      String[] @default([])
+  createdAt DateTime @map("createdat") @default(now())
+  updatedAt DateTime @map("updatedat") @updatedAt
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("userid")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("Note")
 }
 
 // ========== 消息模型 ==========
 model Message {
   id        String      @id @default(uuid())
   type      MessageType @default(SYSTEM)
-  category  String      // 待办事项/课程消息/个人消息/系统消息/群聊/私信
+  category  String
   title     String
   content   String      @db.Text
-  isRead    Boolean     @default(false)
-  senderId  String?
-  createdAt DateTime    @default(now())
+  isRead    Boolean     @map("isread") @default(false)
+  senderId  String?     @map("senderid")
+  createdAt DateTime    @map("createdat") @default(now())
 
-  userId    String
-  user      User        @relation("UserMessages", fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("userid")
+  user   User   @relation("UserMessages", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("Message")
 }
 
 // ========== AI对话模型 ==========
 model AIConversation {
   id        String   @id @default(uuid())
-  sessionId String   @unique
+  sessionId String   @map("sessionid") @unique
   title     String   @default("新对话")
-  messages  Json     // [{role, content, timestamp, attachments?}]
-  context   Json?    // {courseId, userRole, preferences}
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  messages  Json     @default("[]")
+  context   Json?
+  createdAt DateTime @map("createdat") @default(now())
+  updatedAt DateTime @map("updatedat") @updatedAt
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("userid")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("AIConversation")
 }
 
 // ========== 枚举类型 ==========
-enum Role { 
-  STUDENT 
-  TEACHER 
-  PARENT 
-  ADMIN 
+enum Role {
+  STUDENT
+  TEACHER
+  PARENT
+  ADMIN
 }
 
-enum CourseStatus { 
-  ONGOING 
-  UPCOMING 
-  ENDED 
+enum CourseStatus {
+  ONGOING
+  UPCOMING
+  ENDED
 }
 
-enum AssignmentType { 
-  HOMEWORK 
-  QUIZ 
-  TEST 
-  PROJECT 
+enum AssignmentType {
+  HOMEWORK
+  QUIZ
+  TEST
+  PROJECT
 }
 
-enum SubmissionStatus { 
-  SUBMITTED 
-  GRADING 
-  GRADED 
-  RETURNED 
+enum SubmissionStatus {
+  SUBMITTED
+  GRADING
+  GRADED
+  RETURNED
 }
 
-enum AttendanceStatus { 
-  PRESENT 
-  ABSENT 
-  LATE 
-  LEAVE 
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  LEAVE
 }
 
-enum MessageType { 
-  SYSTEM 
-  COURSE 
-  CHAT 
+enum MessageType {
+  SYSTEM
+  COURSE
+  CHAT
 }
 
-enum EnrollRole { 
-  STUDENT 
-  ASSISTANT 
+enum EnrollRole {
+  STUDENT
+  ASSISTANT
 }

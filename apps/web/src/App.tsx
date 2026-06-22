@@ -28,7 +28,7 @@ function App() {
         <Route
           path="/"
           element={
-            isAuthenticated && currentSchool
+            isAuthenticated
               ? <Navigate to="/home" replace />
               : <Navigate to="/school-select" replace />
           }

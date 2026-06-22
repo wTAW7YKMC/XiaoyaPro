@@ -29,7 +29,15 @@ const io = new Server(httpServer, {
 
 // 中间件
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://10.0.2.2:5173',  // Android 模拟器
+    'capacitor://localhost',   // Capacitor Android
+    'http://localhost',        // 允许所有本地开发
+  ],
+  credentials: true,
+}));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -39,12 +47,18 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// API路由
-app.use('/api/auth', await import('./routes/auth.js').then(m => m.default));
-app.use('/api/schools', await import('./routes/schools.js').then(m => m.default));
-app.use('/api/courses', await import('./routes/courses.js').then(m => m.default));
-app.use('/api/messages', await import('./routes/messages.js').then(m => m.default));
-app.use('/api/ai', await import('./routes/ai.js').then(m => m.default));
+// API路由（使用静态导入）
+import authRoutes from './routes/auth.js';
+import schoolRoutes from './routes/schools.js';
+import courseRoutes from './routes/courses.js';
+import messageRoutes from './routes/messages.js';
+import aiRoutes from './routes/ai.js';
+
+app.use('/api/auth', authRoutes);
+app.use('/api/schools', schoolRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Socket.io连接处理
 io.on('connection', (socket) => {
@@ -91,10 +105,11 @@ app.use((req, res) => {
 // 启动服务器
 const PORT = process.env.PORT || 3000;
 
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`
 🚀 服务器已启动
 📡 API地址: http://localhost:${PORT}
+📡 局域网地址: http://0.0.0.0:${PORT} (手机可访问)
 🔌 Socket.io已就绪
 📊 环境: ${process.env.NODE_ENV || 'development'}
   `);
