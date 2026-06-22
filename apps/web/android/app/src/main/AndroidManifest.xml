@@ -34,6 +34,12 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- 我的课程页面Activity -->
+        <activity
+            android:name=".MyCoursesActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main" />
+
         <!-- 悬浮窗服务 -->
         <service
             android:name=".FloatingViewService"

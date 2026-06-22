@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 筛选按钮选中状态背景（绿色圆角矩形） -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/primary_green" />
+    <corners android:radius="16dp" />
+</shape>

@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    我的课程页面布局 - 完全复刻截图设计
+    包含：顶部导航栏、Tab切换、状态筛选、学校筛选、课程列表
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_my_courses"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_gradient_cyan">
+
+    <!-- ========== 顶部导航栏 ========== -->
+    <RelativeLayout
+        android:id="@+id/layout_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:gravity="center_vertical">
+
+        <!-- 返回按钮 -->
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="返回" />
+
+        <!-- 页面标题 -->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="课程"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- 搜索按钮 -->
+        <ImageButton
+            android:id="@+id/btn_search"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toStartOf="@+id/btn_add"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_search"
+            android:contentDescription="搜索" />
+
+        <!-- 添加按钮 -->
+        <ImageButton
+            android:id="@+id/btn_add"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_add"
+            android:contentDescription="添加" />
+    </RelativeLayout>
+
+    <!-- ========== Tab 切换栏 ========== -->
+    <LinearLayout
+        android:id="@+id/layout_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:gravity="center_vertical">
+
+        <!-- 我学的课 -->
+        <LinearLayout
+            android:id="@+id/tab_learning"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackground">
+            
+            <TextView
+                android:id="@+id/tv_tab_learning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="我学的课"
+                android:textColor="@color/primary_green"
+                android:textSize="14sp" />
+            
+            <!-- 绿色下划线指示器（选中时显示） -->
+            <View
+                android:id="@+id/indicator_learning"
+                android:layout_width="48dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/primary_green"
+                android:visibility="visible" />
+        </LinearLayout>
+
+        <!-- 收藏的课 -->
+        <LinearLayout
+            android:id="@+id/tab_favorites"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackground">
+            
+            <TextView
+                android:id="@+id/tv_tab_favorites"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="收藏的课"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="14sp" />
+            
+            <View
+                android:id="@+id/indicator_favorites"
+                android:layout_width="48dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/primary_green"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- 访问的课 -->
+        <LinearLayout
+            android:id="@+id/tab_visited"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackground">
+            
+            <TextView
+                android:id="@+id/tv_tab_visited"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="访问的课"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="14sp" />
+            
+            <View
+                android:id="@+id/indicator_visited"
+                android:layout_width="48dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/primary_green"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ========== 状态筛选栏（仅我学的课显示）========== -->
+    <LinearLayout
+        android:id="@+id/layout_status_filter"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:background="@android:color/white"
+        android:gravity="center_vertical">
+
+        <!-- 进行中(N) -->
+        <TextView
+            android:id="@+id/tv_status_ongoing"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:gravity="center"
+            android:text="正在进行(4)"
+            android:textSize="13sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/filter_button_selected_bg" />
+
+        <!-- 即将开课(0) -->
+        <TextView
+            android:id="@+id/tv_status_upcoming"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginStart="10dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:gravity="center"
+            android:text="即将开课(1)"
+            android:textSize="13sp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/filter_button_normal_bg" />
+
+        <!-- 已结课(N) -->
+        <TextView
+            android:id="@+id/tv_status_ended"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginStart="10dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:gravity="center"
+            android:text="已结课(2)"
+            android:textSize="13sp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/filter_button_normal_bg" />
+
+        <!-- 筛选图标（右侧对齐） -->
+        <ImageButton
+            android:id="@+id/btn_filter"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_filter"
+            android:contentDescription="筛选" />
+    </LinearLayout>
+
+    <!-- ========== 二级筛选栏 ========== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:gravity="center_vertical"
+        android:background="#F5F5F5">
+
+        <!-- 所有课程按钮 -->
+        <TextView
+            android:id="@+id/tv_filter_all"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:gravity="center"
+            android:text="所有课程"
+            android:textSize="12sp"
+            android:textColor="@color/primary_green"
+            android:background="@drawable/filter_button_selected_bg" />
+
+        <!-- 学校下拉选择框 -->
+        <Spinner
+            android:id="@+id/spinner_schools"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginStart="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@drawable/spinner_bg"
+            android:entries="@array/school_names" />
+
+    </LinearLayout>
+
+    <!-- ========== 课程列表区域 ========== -->
+
+    <!-- 加载进度条 -->
+    <ProgressBar
+        android:id="@+id/progress_bar_loading"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <!-- 空状态提示 -->
+    <LinearLayout
+        android:id="@+id/layout_empty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="20dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@mipmap/ic_launcher_round"
+            android:alpha="0.3" />
+
+        <TextView
+            android:id="@+id/tv_empty_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="暂无相关课程"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray" />
+    </LinearLayout>
+
+    <!-- 课程卡片列表 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_courses"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:padding="8dp" />
+
+</LinearLayout>

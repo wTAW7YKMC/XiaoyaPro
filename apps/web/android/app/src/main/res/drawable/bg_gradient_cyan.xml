@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 页面背景：从青色到灰色的垂直渐变 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:startColor="#E0F7FA"
+        android:centerColor="#F5F5F5"
+        android:endColor="#EEEEEE" />
+</shape>

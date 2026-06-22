@@ -26,4 +26,5 @@ android {
 }
 
 dependencies {
+    // 依赖已在 capacitor.build.gradle 中配置
 }

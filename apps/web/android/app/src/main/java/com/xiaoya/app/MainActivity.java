@@ -5,6 +5,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
 
 import com.getcapacitor.BridgeActivity;
 
@@ -13,8 +17,9 @@ import com.getcapacitor.BridgeActivity;
  * 继承Capacitor的BridgeActivity，并添加悬浮窗功能
  * 功能：
  * 1. 保留原有的Capacitor Web视图功能
- * 2. 请求悬浮窗权限
- * 3. 启动AI助手悬浮窗服务
+ * 2. 显示"我的课程"入口按钮
+ * 3. 请求悬浮窗权限
+ * 4. 启动AI助手悬浮窗服务
  */
 public class MainActivity extends BridgeActivity {
 
@@ -25,8 +30,53 @@ public class MainActivity extends BridgeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // 添加"我的课程"入口按钮到WebView上方
+        addMyCoursesButton();
+
         // 初始化后检查并启动悬浮窗服务
         checkAndStartFloatingService();
+    }
+
+    /**
+     * 在WebView容器上方添加"我的课程"按钮
+     * 用户点击后可跳转到原生课程列表页面
+     */
+    private void addMyCoursesButton() {
+        // 获取主布局容器
+        FrameLayout mainLayout = findViewById(android.R.id.content);
+        
+        if (mainLayout != null) {
+            // 创建按钮
+            Button btnMyCourses = new Button(this);
+            btnMyCourses.setText("📖 我的课程");
+            btnMyCourses.setAllCaps(false);
+            
+            // 设置按钮样式（绿色背景，白色文字）
+            btnMyCourses.setBackgroundColor(0xFF4CAF50);
+            btnMyCourses.setTextColor(0xFFFFFFFF);
+            btnMyCourses.setTextSize(14f);
+            btnMyCourses.setPadding(40, 16, 40, 16);
+            
+            // 设置点击事件 - 跳转到课程列表页面
+            btnMyCourses.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, MyCoursesActivity.class);
+                startActivity(intent);
+                
+                // 添加从右向左滑入的过渡动画
+                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+            });
+            
+            // 创建布局参数（顶部居中）
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.topMargin = 100;  // 距离顶部100dp
+            params.gravity = Gravity.CENTER_HORIZONTAL;
+            
+            // 将按钮添加到布局中
+            mainLayout.addView(btnMyCourses, params);
+        }
     }
 
     /**

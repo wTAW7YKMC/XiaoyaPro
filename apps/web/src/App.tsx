@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import MessageCenterPage from './pages/MessageCenterPage';
 import ProfilePage from './pages/ProfilePage';
+import MyCoursesPage from './pages/MyCoursesPage';  // 新增：我的课程页面
 import TabBarLayout from './components/layout/TabBarLayout';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/messages" element={<MessageCenterPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/courses" element={<MyCoursesPage />} />  {/* 新增：我的课程 */}
         </Route>
         
         {/* 默认路由 */}

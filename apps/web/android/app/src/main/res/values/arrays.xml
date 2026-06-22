@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 学校名称下拉列表数据 -->
+<resources>
+    <string-array name="school_names">
+        <item>全部学校</item>
+        <item>武汉理工大学</item>
+        <item>经济学院</item>
+        <item>外国语学院</item>
+        <item>法学与人文社会学院</item>
+        <item>体育学院</item>
+    </string-array>
+</resources>

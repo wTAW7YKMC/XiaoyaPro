@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    
-    <!-- 小雅智能助手主题色 -->
-    <color name="colorPrimary">#10B981</color>
-    <color name="colorPrimaryDark">#059669</color>
-    <color name="colorAccent">#10B981</color>
+    <!-- 主题绿色（用于Tab选中、进度条、按钮等） -->
+    <color name="primary_green">#4CAF50</color>
 </resources>
