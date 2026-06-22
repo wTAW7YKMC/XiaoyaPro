@@ -27,6 +27,7 @@ model User {
 
   // === 1:N 关联 ===
   teachCourses    Course[]       @relation("TeacherCourses")
+  assignments     Assignment[]   // 教师布置的作业
   submissions     Submission[]
   notes           Note[]
   messages        Message[]      @relation("UserMessages")

@@ -1,7 +1,14 @@
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
+
+// 使用字符串代替枚举导入（兼容性问题）
+const Role = {
+  STUDENT: 'STUDENT',
+  TEACHER: 'TEACHER',
+  ADMIN: 'ADMIN',
+};
 
 async function main() {
   console.log('🌱 开始填充数据库...');

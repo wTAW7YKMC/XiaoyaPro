@@ -2,17 +2,59 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { authAPI } from '../services/api';
-import { Building2, User, Lock, Eye, EyeOff, ChevronLeft, Shield } from 'lucide-react';
+import { Building2, User, Lock, Eye, EyeOff, ChevronLeft, Shield, Zap } from 'lucide-react';
+
+// 开发模式：测试账号数据（用于无数据库时快速开发）
+const DEV_TEST_USERS = [
+  {
+    id: 'dev-student-001',
+    phone: '13800138000',
+    name: '喻贝贝',
+    role: 'STUDENT',
+    userType: '普通用户',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=student1',
+    schoolId: 'dev-school-001',
+    school: { id: 'dev-school-001', name: '武汉理工大学', logo: '' },
+  },
+  {
+    id: 'dev-teacher-001',
+    phone: '13900139000',
+    name: '张老师',
+    role: 'TEACHER',
+    userType: '普通用户',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=teacher1',
+    schoolId: 'dev-school-001',
+    school: { id: 'dev-school-001', name: '武汉理工大学', logo: '' },
+  },
+];
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { currentSchool, setUser } = useAuthStore();
-  
+  const { currentSchool, setUser, setSchool } = useAuthStore();
+
   const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [agreed, setAgreed] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  // 开发模式快速登录（绕过后端API）
+  const handleDevLogin = (userIndex: number) => {
+    const user = DEV_TEST_USERS[userIndex];
+    
+    // 设置学校（如果还没选择）
+    if (!currentSchool && user.school) {
+      setSchool(user.school);
+    }
+    
+    // 模拟 token
+    const accessToken = 'dev-access-token-' + Date.now();
+    const refreshToken = 'dev-refresh-token-' + Date.now();
+    
+    // 直接设置用户状态（跳过API调用）
+    setUser(user, accessToken, refreshToken);
+    navigate('/home');
+  };
 
   const handleLogin = async () => {
     if (!account || !password) {
@@ -127,6 +169,28 @@ export default function LoginPage() {
         >
           {loading ? '登录中...' : '登录'}
         </button>
+
+        {/* 开发模式快速入口 */}
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <Zap className="w-4 h-4 text-yellow-600" />
+            <span className="text-xs font-semibold text-yellow-700">快速登录（无需密码）</span>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleDevLogin(0)}
+              className="flex-1 py-2 bg-blue-500 text-white text-xs rounded-md hover:bg-blue-600 transition-colors"
+            >
+              学生账号
+            </button>
+            <button
+              onClick={() => handleDevLogin(1)}
+              className="flex-1 py-2 bg-purple-500 text-white text-xs rounded-md hover:bg-purple-600 transition-colors"
+            >
+              教师账号
+            </button>
+          </div>
+        </div>
 
         {/* 忘记密码 */}
         <div className="text-right mb-8">
