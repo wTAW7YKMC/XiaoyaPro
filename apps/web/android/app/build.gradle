@@ -47,6 +47,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
     // CardView支持库（用于消息卡片）
     implementation 'androidx.cardview:cardview:1.0.0'
+    // RecyclerView支持库（用于课程列表）
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    // Picasso图片加载库
+    implementation 'com.squareup.picasso:picasso:2.8'
 }
 
 apply from: 'capacitor.build.gradle'

@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '../stores/authStore';
+import { supabase } from './supabase';
 
 // 创建axios实例
 const apiClient: AxiosInstance = axios.create({
@@ -12,11 +13,12 @@ const apiClient: AxiosInstance = axios.create({
 
 // 请求拦截器
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const { accessToken } = useAuthStore.getState();
+  async (config: InternalAxiosRequestConfig) => {
+    // 从 Supabase 获取 session token
+    const { data: { session } } = await supabase.auth.getSession();
     
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    if (session?.access_token) {
+      config.headers.Authorization = `Bearer ${session.access_token}`;
     }
     
     return config;
@@ -32,34 +34,13 @@ apiClient.interceptors.response.use(
     return response.data;
   },
   async (error: AxiosError) => {
-    const { logout, refreshToken, updateToken } = useAuthStore.getState();
+    const { logout } = useAuthStore.getState();
     
     // 401 未授权
     if (error.response?.status === 401) {
-      // 尝试刷新token
-      if (refreshToken) {
-        try {
-          const response = await axios.post('/api/auth/refresh', {
-            refreshToken,
-          });
-          
-          const { accessToken, refreshToken: newRefreshToken } = response.data;
-          updateToken(accessToken, newRefreshToken);
-          
-          // 重试原请求
-          if (error.config) {
-            error.config.headers.Authorization = `Bearer ${accessToken}`;
-            return apiClient(error.config);
-          }
-        } catch (refreshError) {
-          // 刷新失败，登出
-          logout();
-          window.location.href = '/login';
-        }
-      } else {
-        logout();
-        window.location.href = '/login';
-      }
+      // 登出并跳转到登录页
+      logout();
+      window.location.href = '/login';
     }
     
     return Promise.reject(error);
