@@ -1,0 +1,336 @@
+// Prisma Schema - 小雅智能助手数据库模型
+// 严格按照需求文档中的关联关系定义
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========== 用户模型 ==========
+model User {
+  id            String   @id @default(uuid())
+  phone         String   @unique
+  email         String?  @unique
+  password      String   // bcrypt加密
+  name          String
+  avatar        String?  // 头像URL
+  role          Role     @default(STUDENT)
+  schoolId      String?
+  school        School?  @relation(fields: [schoolId], references: [id])
+  userType      String   @default("普通用户") // 普通用户/VIP/管理员
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // === 1:N 关联 ===
+  teachCourses    Course[]       @relation("TeacherCourses")
+  submissions     Submission[]
+  notes           Note[]
+  messages        Message[]      @relation("UserMessages")
+  attendances     Attendance[]
+  grades          Grade[]
+  aiConversations AIConversation[]
+
+  // === N:M 关联 ===
+  learnCourses  Enrollment[]
+  groups        GroupMember[]
+  discussions   Discussion[]
+}
+
+// ========== 学校模型 ==========
+model School {
+  id        String   @id @default(uuid())
+  name      String
+  logo      String?  // 校徽URL
+  code      String   @unique
+  createdAt DateTime @default(now())
+
+  users     User[]
+  courses   Course[]
+}
+
+// ========== 课程模型 ==========
+model Course {
+  id          String       @id @default(uuid())
+  title       String
+  cover       String?      // 课程封面
+  description String?      @db.Text
+  status      CourseStatus @default(ONGOING)
+  semester    String
+  type        String       @default("校内") // 校内/校外/自主开课
+  visitCount  Int          @default(0)
+  maxStudents Int?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // === 关联关系 ===
+  teacherId   String
+  teacher     User         @relation("TeacherCourses", fields: [teacherId], references: [id])
+  schoolId    String?
+  school      School?      @relation(fields: [schoolId], references: [id])
+
+  // === 1:N 子表 ===
+  assignments   Assignment[]
+  documents     Document[]
+  discussions   Discussion[]
+  groups        Group[]
+  enrollments   Enrollment[]
+  attendances   Attendance[]
+  grades        Grade[]
+  chapters      Chapter[] // 课程章节（备授课）
+}
+
+// ========== 选课/注册模型（N:M关联表） ==========
+model Enrollment {
+  id        String     @id @default(uuid())
+  userId    String
+  courseId  String
+  role      EnrollRole @default(STUDENT)
+  progress  Int        @default(0) // 学习进度百分比
+  joinedAt  DateTime   @default(now())
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+// ========== 作业/任务模型 ==========
+model Assignment {
+  id              String         @id @default(uuid())
+  title           String
+  type            AssignmentType @default(HOMEWORK)
+  content         String         @db.Text
+  deadline        DateTime?
+  maxScore        Int            @default(100)
+  status          String         @default("DRAFT")
+  aiReviewEnabled Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+
+  teacherId       String
+  teacher         User           @relation(fields: [teacherId], references: [id])
+  courseId        String
+  course        Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  submissions Submission[]
+}
+
+// ========== 作业提交模型 ==========
+model Submission {
+  id           String           @id @default(uuid())
+  content      String           @db.Text
+  attachments  String[]
+  score        Int?
+  feedback     String?          @db.Text
+  aiReview     String?          @db.Text // AI批改结果JSON
+  status       SubmissionStatus @default(SUBMITTED)
+  submittedAt  DateTime         @default(now())
+  gradedAt     DateTime?
+
+  studentId    String
+  student      User             @relation(fields: [studentId], references: [id])
+  assignmentId String
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+}
+
+// ========== 学习分组模型 ==========
+model Group {
+  id         String   @id @default(uuid())
+  name       String
+  type       String   @default("协作学习分组")
+  maxMembers Int      @default(6)
+  createdAt  DateTime @default(now())
+
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  members    GroupMember[]
+}
+
+// ========== 分组成员模型（N:M关联表） ==========
+model GroupMember {
+  id       String   @id @default(uuid())
+  role     String   @default("member") // leader/member
+  joinedAt DateTime @default(now())
+
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupId  String
+  group    Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+}
+
+// ========== 课程章节模型 ==========
+model Chapter {
+  id        String   @id @default(uuid())
+  title     String
+  order     Int
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  materials Material[]
+}
+
+// ========== 课程资料模型 ==========
+model Material {
+  id         String   @id @default(uuid())
+  name       String
+  url        String
+  type       String   // PDF/DOC/VIDEO/IMAGE/LINK
+  size       Int?
+  visible    Boolean  @default(true)
+  uploadedAt DateTime @default(now())
+
+  chapterId  String
+  chapter    Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+}
+
+// ========== 课程文档模型 ==========
+model Document {
+  id        String   @id @default(uuid())
+  name      String
+  url       String
+  type      String
+  size      Int?
+  createdAt DateTime @default(now())
+
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// ========== 课程讨论模型 ==========
+model Discussion {
+  id        String   @id @default(uuid())
+  title     String
+  content   String   @db.Text
+  aiSummary String?  @db.Text
+  createdAt DateTime @default(now())
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// ========== 考勤模型 ==========
+model Attendance {
+  id       String           @id @default(uuid())
+  date     DateTime
+  status   AttendanceStatus @default(PRESENT)
+  method   String           @default("manual")
+
+  userId   String
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId, date])
+}
+
+// ========== 成绩模型 ==========
+model Grade {
+  id        String   @id @default(uuid())
+  type      String   // 平时/期中/期末/总评
+  score     Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// ========== 笔记模型 ==========
+model Note {
+  id        String   @id @default(uuid())
+  title     String
+  content   String   @db.Text
+  courseId  String?
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ========== 消息模型 ==========
+model Message {
+  id        String      @id @default(uuid())
+  type      MessageType @default(SYSTEM)
+  category  String      // 待办事项/课程消息/个人消息/系统消息/群聊/私信
+  title     String
+  content   String      @db.Text
+  isRead    Boolean     @default(false)
+  senderId  String?
+  createdAt DateTime    @default(now())
+
+  userId    String
+  user      User        @relation("UserMessages", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ========== AI对话模型 ==========
+model AIConversation {
+  id        String   @id @default(uuid())
+  sessionId String   @unique
+  title     String   @default("新对话")
+  messages  Json     // [{role, content, timestamp, attachments?}]
+  context   Json?    // {courseId, userRole, preferences}
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ========== 枚举类型 ==========
+enum Role { 
+  STUDENT 
+  TEACHER 
+  PARENT 
+  ADMIN 
+}
+
+enum CourseStatus { 
+  ONGOING 
+  UPCOMING 
+  ENDED 
+}
+
+enum AssignmentType { 
+  HOMEWORK 
+  QUIZ 
+  TEST 
+  PROJECT 
+}
+
+enum SubmissionStatus { 
+  SUBMITTED 
+  GRADING 
+  GRADED 
+  RETURNED 
+}
+
+enum AttendanceStatus { 
+  PRESENT 
+  ABSENT 
+  LATE 
+  LEAVE 
+}
+
+enum MessageType { 
+  SYSTEM 
+  COURSE 
+  CHAT 
+}
+
+enum EnrollRole { 
+  STUDENT 
+  ASSISTANT 
+}
