@@ -137,8 +137,8 @@ public class HomeActivity extends AppCompatActivity {
     private void handleFunctionEntryClick(int position) {
         switch (position) {
             case 0: // 我的课程
-                // TODO: 跳转到我的课程页面
-                showToast("我的课程功能开发中");
+                Intent intent = new Intent(this, MyCoursesActivity.class);
+                startActivity(intent);
                 break;
             case 1: // 我的文档
                 // TODO: 跳转到我的文档页面

@@ -1,3 +1,51 @@
 <resources>
-    <string name="app_name">Xiaoyapro</string>
+    <string name="app_name">小雅智能助手</string>
+
+    <!-- 功能入口图标（使用Emoji） -->
+    <string name="icon_courses">📚</string>
+    <string name="icon_documents">📄</string>
+    <string name="icon_tasks">📍</string>
+    <string name="icon_discover">💬</string>
+
+    <!-- 功能入口标签文字 -->
+    <string name="label_courses">我的课程</string>
+    <string name="label_documents">我的文档</string>
+    <string name="label_tasks">任务提醒</string>
+    <string name="label_discover">发现</string>
+
+    <!-- 消息分类图标和名称 -->
+    <string name="icon_todo">📅</string>
+    <string name="icon_course_msg">💬</string>
+    <string name="icon_personal_msg">👤</string>
+    <string name="icon_system_msg">⚙️</string>
+    <string name="icon_group_chat">👥</string>
+    <string name="icon_private_msg">✉️</string>
+    <string name="icon_contacts">📇</string>
+
+    <string name="label_todo">待办事项</string>
+    <string name="label_course_msg">课程消息</string>
+    <string name="label_personal_msg">个人消息</string>
+    <string name="label_system_msg">系统消息</string>
+    <string name="label_group_chat">群聊</string>
+    <string name="label_private_msg">私信</string>
+    <string name="label_contacts">通讯录</string>
+
+    <!-- 个人中心菜单项图标和名称 -->
+    <string name="icon_dashboard">📊</string>
+    <string name="icon_report">📝</string>
+    <string name="icon_feedback">💭</string>
+    <string name="icon_complaint">⚠️</string>
+    <string name="icon_about">ℹ️</string>
+
+    <string name="label_dashboard">个人数据看板</string>
+    <string name="label_report">我的报告</string>
+    <string name="label_feedback">反馈&amp;建议</string>
+    <string name="label_complaint">投诉举报</string>
+    <string name="label_about">关于小雅</string>
+
+    <!-- 通用文字 -->
+    <string name="title_message_center">消息中心</string>
+    <string name="btn_logout">退出登录</string>
+    <string name="tag_normal_user">普通用户</string>
+    <string name="msg_logout_confirm">确定要退出登录吗？</string>
 </resources>

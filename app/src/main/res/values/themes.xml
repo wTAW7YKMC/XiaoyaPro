@@ -1,9 +1,63 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Xiaoyapro" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- 主色调 -->
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_primary</item>
+
+        <!-- 背景色 -->
+        <item name="android:windowBackground">@color/color_bg_page</item>
+
+        <!-- 状态栏透明 -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+        <!-- 禁用Edge-to-Edge系统默认行为 -->
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.Xiaoyapro" parent="Base.Theme.Xiaoyapro" />
+
+    <!-- 按钮样式 - 主按钮（青绿色渐变） -->
+    <style name="ButtonPrimary">
+        <item name="android:background">@drawable/bg_button_primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <!-- 输入框样式 -->
+    <style name="EditTextStyle">
+        <item name="android:background">@drawable/bg_input_field</item>
+        <item name="android:paddingStart">48dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/color_text_primary</item>
+        <item name="android:textColorHint">@color/color_text_secondary</item>
+    </style>
+
+    <!-- 卡片样式 -->
+    <style name="CardStyle">
+        <item name="android:background">@drawable/bg_card_white</item>
+        <item name="android:elevation">2dp</item>
+    </style>
+
+    <!-- 文字标题样式 -->
+    <style name="TextTitle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/color_text_primary</item>
+    </style>
+
+    <!-- 文字副标题样式 -->
+    <style name="TextSubtitle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/color_text_secondary</item>
+    </style>
 </resources>

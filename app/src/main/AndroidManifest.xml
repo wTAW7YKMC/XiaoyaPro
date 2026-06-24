@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,15 +14,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Xiaoyapro">
+
+        <!-- 选择学校页面（启动页） -->
         <activity
-            android:name=".MainActivity"
+            android:name=".SchoolSelectActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 登录页面 -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+        <!-- 主页面（带TabBar的容器） -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- 我的课程页面 -->
+        <activity
+            android:name=".MyCoursesActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

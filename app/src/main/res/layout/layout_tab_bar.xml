@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/white"
+    android:elevation="8dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <!-- 首页Tab -->
+    <LinearLayout
+        android:id="@+id/tab_home"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:paddingVertical="6dp">
+
+        <!-- 图标容器 -->
+        <FrameLayout
+            android:layout_width="28dp"
+            android:layout_height="28dp">
+
+            <!-- 图标背景（选中时显示青色填充） -->
+            <View
+                android:id="@+id/bg_tab_home"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_tab_selected"
+                android:visibility="visible" />
+
+            <!-- 首页图标 -->
+            <TextView
+                android:id="@+id/icon_tab_home"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="🏠"
+                android:textSize="20sp"
+                android:alpha="1.0" />
+        </FrameLayout>
+
+        <!-- 文字标签（可选，根据设计决定是否显示） -->
+        <!--
+        <TextView
+            android:id="@+id/text_tab_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="首页"
+            android:textSize="10sp"
+            android:layout_marginTop="2dp" />
+        -->
+    </LinearLayout>
+
+    <!-- 消息Tab（带红点通知） -->
+    <RelativeLayout
+        android:id="@+id/tab_messages"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:paddingVertical="6dp">
+
+        <!-- 图标容器（居中） -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_centerInParent="true">
+
+            <!-- 图标容器 -->
+            <FrameLayout
+                android:layout_width="28dp"
+                android:layout_height="28dp">
+
+                <!-- 图标背景（未选中时不显示或灰色） -->
+                <View
+                    android:id="@+id/bg_tab_messages"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:visibility="invisible" />
+
+                <!-- 消息图标（铃铛） -->
+                <TextView
+                    android:id="@+id/icon_tab_messages"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="🔔"
+                    android:textSize="20sp"
+                    android:alpha="0.6" /> <!-- 未选中状态半透明 -->
+
+                <!-- 红点通知角标 -->
+                <View
+                    android:id="@+id/red_dot_messages"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="-2dp"
+                    android:layout_marginEnd="-2dp"
+                    android:background="@drawable/bg_red_dot"
+                    android:visibility="visible" />
+            </FrameLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- 我的Tab -->
+    <LinearLayout
+        android:id="@+id/tab_profile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:paddingVertical="6dp">
+
+        <!-- 图标容器 -->
+        <FrameLayout
+            android:layout_width="28dp"
+            android:layout_height="28dp">
+
+            <!-- 图标背景（未选中时不显示） -->
+            <View
+                android:id="@+id/bg_tab_profile"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_tab_selected"
+                android:visibility="invisible" />
+
+            <!-- 我的图标（人像） -->
+            <TextView
+                android:id="@+id/icon_tab_profile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="👤"
+                android:textSize="20sp"
+                android:alpha="0.6" /> <!-- 未选中状态半透明 -->
+        </FrameLayout>
+
+        <!-- 文字标签（可选） -->
+        <!--
+        <TextView
+            android:id="@+id/text_tab_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="我的"
+            android:textSize="10sp"
+            android:layout_marginTop="2dp" />
+        -->
+    </LinearLayout>
+
+</LinearLayout>

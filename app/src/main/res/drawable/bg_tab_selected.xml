@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <!-- Tab选中状态的背景：青绿色圆形 -->
+    <solid android:color="#D1FAE5" /> <!-- 浅绿背景 color_primary_light -->
+</shape>
