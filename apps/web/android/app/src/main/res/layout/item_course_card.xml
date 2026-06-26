@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/cover_placeholder_bg"
+                android:src="@drawable/course_cover_1"
                 android:contentDescription="课程封面" />
 
             <!-- 学期标签（左上角） -->

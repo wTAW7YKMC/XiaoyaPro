@@ -142,7 +142,8 @@ public class HomeFragment extends Fragment {
         
         switch (position) {
             case 0: // 我的课程
-                android.widget.Toast.makeText(getContext(), "我的课程功能开发中", android.widget.Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), CourseDetailActivity.class);
+                startActivity(intent);
                 break;
             case 1: // 我的文档
                 android.widget.Toast.makeText(getContext(), "我的文档功能开发中", android.widget.Toast.LENGTH_SHORT).show();

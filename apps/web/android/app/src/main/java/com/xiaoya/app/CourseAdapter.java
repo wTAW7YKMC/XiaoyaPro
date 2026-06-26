@@ -63,7 +63,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         Course course = courseList.get(position);
         
         try {
-            holder.bind(course, showProgress);
+            holder.bind(course, showProgress, position);
             
             // 设置点击事件
             if (onItemClickListener != null) {
@@ -122,21 +122,30 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         }
 
         /**
+         * 根据位置获取对应的封面占位图资源
+         * 为不同课程分配不同的美观渐变背景
+         */
+        private int getPlaceholderForPosition(int position) {
+            switch (position % 3) {
+                case 0:
+                    return R.drawable.course_cover_1;  // 蓝紫色渐变
+                case 1:
+                    return R.drawable.course_cover_2;  // 橙色渐变
+                case 2:
+                    return R.drawable.course_cover_3;  // 青蓝色渐变
+                default:
+                    return R.drawable.course_cover_placeholder;  // 默认绿色渐变
+            }
+        }
+
+        /**
          * 绑定数据到视图
          */
-        void bind(Course course, boolean showProgress) {
-            // 加载封面图 - 使用 Picasso 库，支持占位图和错误处理
-            if (course.getCover() != null && !course.getCover().isEmpty()) {
-                Picasso.get()
-                        .load(course.getCover())
-                        .placeholder(R.drawable.cover_placeholder_bg)
-                        .error(R.drawable.cover_placeholder_bg)
-                        .fit()
-                        .centerCrop()
-                        .into(ivCover);
-            } else {
-                ivCover.setImageResource(R.drawable.cover_placeholder_bg);
-            }
+        void bind(Course course, boolean showProgress, int position) {
+            // 直接使用本地美观渐变封面，不再加载网络图片
+            // 为不同课程分配不同的美观渐变封面背景
+            int coverRes = getPlaceholderForPosition(position);
+            ivCover.setImageResource(coverRes);
             
             // 设置课程标题
             tvTitle.setText(course.getTitle());

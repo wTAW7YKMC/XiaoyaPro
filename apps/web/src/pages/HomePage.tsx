@@ -30,7 +30,7 @@ export default function HomePage() {
       console.error('加载课程失败:', error);
       // 使用模拟数据
       setCourses([
-        { id: '1', title: '高等数学', progress: 65 },
+        { id: '1', title: '经济数学——微积分（一）', progress: 65 },
         { id: '2', title: '大学英语', progress: 40 },
         { id: '3', title: '计算机程序设计', progress: 80 },
       ]);

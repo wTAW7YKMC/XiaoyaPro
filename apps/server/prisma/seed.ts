@@ -105,8 +105,8 @@ async function main() {
   // 3. 创建课程
   const course1 = await prisma.course.create({
     data: {
-      title: '高等数学',
-      description: '大学高等数学课程，包括微积分、线性代数等内容',
+      title: '经济数学——微积分（一）',
+      description: '大学经济数学课程，包括微积分、线性代数等内容',
       semester: '2024春季',
       type: '校内',
       status: 'ONGOING',
@@ -245,7 +245,7 @@ async function main() {
   // 9. 创建笔记
   await prisma.note.create({
     data: {
-      title: '高等数学第一章笔记',
+      title: '经济数学第一章笔记',
       content: '极限的定义和性质...\n连续函数的概念...\n导数的计算方法...',
       courseId: course1.id,
       tags: ['高数', '极限', '导数'],
