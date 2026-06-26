@@ -7,20 +7,20 @@ import { messageAPI } from '../../services/api';
 export default function TabBar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [hasUnread, setHasUnread] = useState(false);
 
   useEffect(() => {
-    loadUnreadCount();
+    loadUnreadStatus();
   }, []);
 
-  const loadUnreadCount = async () => {
+  const loadUnreadStatus = async () => {
     try {
       const response = await messageAPI.getUnreadCount();
       if (response.success) {
-        setUnreadCount(response.data.total);
+        setHasUnread((response.data.total || 0) > 0);
       }
     } catch (error) {
-      console.error('加载未读消息数量失败:', error);
+      console.error('加载未读消息状态失败:', error);
     }
   };
 
@@ -34,7 +34,7 @@ export default function TabBar() {
       path: '/messages',
       icon: Bell,
       label: '消息',
-      badge: unreadCount,
+      showDot: hasUnread,
     },
     {
       path: '/profile',
@@ -65,10 +65,8 @@ export default function TabBar() {
                   fill={isActive ? 'currentColor' : 'none'}
                   strokeWidth={isActive ? 2.5 : 2}
                 />
-                {tab.badge && tab.badge > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-[#EF4444] text-white text-xs rounded-full flex items-center justify-center">
-                    {tab.badge > 99 ? '99+' : tab.badge}
-                  </span>
+                {'showDot' in tab && tab.showDot && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#EF4444] rounded-full border border-white"></span>
                 )}
               </div>
               <span
