@@ -33,6 +33,7 @@
         <activity
             android:name=".ChatActivity"
             android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- 我的课程页面Activity -->
