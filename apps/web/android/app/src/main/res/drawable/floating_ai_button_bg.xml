@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AI悬浮窗按钮背景 - 白色圆形带阴影，贴合页面圆角卡片风格 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 底层阴影：半透明黑色圆形，向右下方偏移 -->
+    <item
+        android:left="2dp"
+        android:top="3dp"
+        android:right="0dp"
+        android:bottom="0dp">
+        <shape android:shape="oval">
+            <solid android:color="#26000000" />
+        </shape>
+    </item>
+
+    <!-- 上层主体：白色圆形 -->
+    <item
+        android:left="0dp"
+        android:top="0dp"
+        android:right="2dp"
+        android:bottom="3dp">
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF" />
+            <stroke
+                android:width="0.5dp"
+                android:color="#1A000000" />
+        </shape>
+    </item>
+
+</layer-list>

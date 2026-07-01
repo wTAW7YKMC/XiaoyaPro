@@ -10,6 +10,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 
 /**
  * 悬浮窗服务 - 提供可自由拖动的AI助手悬浮窗
@@ -60,14 +62,17 @@ public class FloatingViewService extends Service {
         ImageView imageView = new ImageView(this);
         floatingView = imageView;  // 赋值给父类引用
 
-        // 设置AI助手图标（使用自带的机器人图标）
-        imageView.setImageResource(android.R.drawable.ic_dialog_info);
-        // 设置背景为圆形渐变（青绿色主题色）
-        imageView.setBackgroundResource(R.drawable.ai_avatar_bg);
-        // 设置大小为60x60像素
-        imageView.setLayoutParams(new WindowManager.LayoutParams(120, 120));
-        // 设置内边距让图标更美观
-        imageView.setPadding(20, 20, 20, 20);
+        // 设置AI助手图标为企鹅形象，与页面整体风格保持一致
+        imageView.setImageResource(R.drawable.ic_penguin);
+        // 设置背景为白色圆形卡片，带轻微阴影
+        imageView.setBackgroundResource(R.drawable.floating_ai_button_bg);
+        // 设置大小为56dp x 56dp（约112px，贴合参考图的圆形按钮比例）
+        int buttonSize = dpToPx(56);
+        imageView.setLayoutParams(new WindowManager.LayoutParams(buttonSize, buttonSize));
+        // 设置内边距让企鹅图标在圆形内居中显示
+        imageView.setPadding(dpToPx(10), dpToPx(10), dpToPx(10), dpToPx(10));
+        // 设置缩放类型，保证图标完整展示
+        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         // 设置布局参数
         params = new WindowManager.LayoutParams(
@@ -138,6 +143,15 @@ public class FloatingViewService extends Service {
                 return false;
             }
         });
+    }
+
+    /**
+     * 将dp单位转换为像素px
+     * 保证悬浮窗按钮在不同屏幕密度下显示大小一致
+     */
+    private int dpToPx(int dp) {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics);
     }
 
     /**
