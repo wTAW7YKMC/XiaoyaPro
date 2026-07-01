@@ -2,4 +2,8 @@
 <resources>
     <!-- 主题绿色（用于Tab选中、进度条、按钮等） -->
     <color name="primary_green">#4CAF50</color>
+    <!-- 系统帮助页面蓝色主色 -->
+    <color name="blue_primary">#3B82F6</color>
+    <!-- 系统帮助页面灰色文字 -->
+    <color name="gray_text">#6B7280</color>
 </resources>
