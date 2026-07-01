@@ -9,6 +9,7 @@
   5. 底部输入区：启动网页会话快捷入口 + 输入框
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5"

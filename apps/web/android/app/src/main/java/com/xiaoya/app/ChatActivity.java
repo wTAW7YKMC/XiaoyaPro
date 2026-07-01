@@ -1,9 +1,11 @@
 package com.xiaoya.app;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -45,6 +47,7 @@ public class ChatActivity extends AppCompatActivity {
 
     // 底部输入区
     private LinearLayout btnWebSessionBottom; // 底部启动网页会话按钮
+    private LinearLayout rootLayout;            // 根布局，用于键盘弹出时手动补偿padding
 
     // DeepSeek API服务实例
     private DeepSeekService deepSeekService;
@@ -65,6 +68,9 @@ public class ChatActivity extends AppCompatActivity {
 
         // 设置事件监听器
         setupListeners();
+
+        // 监听键盘弹出，自动滚动到底部确保输入框可见
+        setupKeyboardListener();
     }
 
     /**
@@ -97,6 +103,7 @@ public class ChatActivity extends AppCompatActivity {
 
         // 底部输入区
         btnWebSessionBottom = findViewById(R.id.btn_web_session_bottom);
+        rootLayout = findViewById(R.id.root_layout);
 
         // 设置当前时间
         tvChatTime.setText(DateFormat.format("HH:mm", Calendar.getInstance()));
@@ -133,6 +140,38 @@ public class ChatActivity extends AppCompatActivity {
         btnViewMore.setOnClickListener(v -> {
             editMessage.setText("查看更多常见问题");
             sendMessage();
+        });
+    }
+
+    /**
+     * 监听软键盘弹出/收起，自动滚动消息列表到底部，确保输入框始终可见
+     * 当 adjustResize 未生效时，手动给根布局设置 paddingBottom 补偿键盘高度
+     */
+    private void setupKeyboardListener() {
+        final View rootView = getWindow().getDecorView().getRootView();
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            private final Rect r = new Rect();
+            private int originalScreenHeight = 0;
+
+            @Override
+            public void onGlobalLayout() {
+                rootView.getWindowVisibleDisplayFrame(r);
+                int screenHeight = rootView.getHeight();
+                int keyboardHeight = screenHeight - r.bottom;
+
+                if (keyboardHeight == 0) {
+                    // 键盘收起，记录原始屏幕高度并恢复padding
+                    originalScreenHeight = screenHeight;
+                    rootLayout.setPadding(0, 0, 0, 0);
+                } else {
+                    // 键盘弹出
+                    if (screenHeight == originalScreenHeight) {
+                        // adjustResize 未生效，手动补偿 paddingBottom 将输入框顶到键盘上方
+                        rootLayout.setPadding(0, 0, 0, keyboardHeight);
+                    }
+                    scrollToBottom();
+                }
+            }
         });
     }
 
